@@ -14,7 +14,21 @@ $(document).ready(function(){
     let database = firebase.database();
     let numSubmits; 
     
-    console.log(moment(['12 am']).add(1,'hour').format('h:mm a'))
+    //console.log(moment(['13:05']).format('h:mm a'))
+
+    // function calcTime() {
+    //     let runTime = moment(['12pm'])
+    //     let currentTime = moment()
+    //     console.log(runtime-currentTime)
+    //     let freq = moment('1','hour')
+    //     let nextTime;
+    //     let minTil;
+        
+    //     for (i = runTime; i < currentTime; i + freq) {
+    //         nextTime = i + freq
+    //     }
+    //     minTil = nextTime - currentTime 
+    // }
 
 
 
@@ -24,6 +38,19 @@ $(document).ready(function(){
     });
 
     //updateDOM();
+
+    function convertToMoment() {
+        let unconverted = $('#train-time').val();
+        console.log(unconverted);
+        let tSplit = unconverted.split(':');
+        console.log(tSplit);
+        let hh = tSplit[0];
+        console.log(hh)
+        let mm = tSplit[1];
+        console.log(mm)
+       
+
+    }
  
     //on submit: take all values and enters them into an object with unique id
     $('#trainSubmit').on('click', function(event){
@@ -40,7 +67,7 @@ $(document).ready(function(){
                 idVal: numSubmits,
             }
         })
-        
+        convertToMoment();
         //updateDOM();
         
     });
@@ -48,27 +75,27 @@ $(document).ready(function(){
     //take values (convert times) and add them to database
     
     //take most recent database values and append them to DOM
-    // function updateDOM() {
-    //     $('#train-name').val('');
-    //     $('#destination').val('');
-    //     $('#train-time').val('');
-    //     $('#frequency').val('');
+    function updateDOM() {
+        $('#train-name').val('');
+        $('#destination').val('');
+        $('#train-time').val('');
+        $('#frequency').val('');
 
-    //     //return object
-    //     database.ref('/trains').on('value', function(snapshot){
-    //         let trains = snapshot.val();
-    //         $('tbody').empty();
+        //return object
+        database.ref('/trains').on('value', function(snapshot){
+            let trains = snapshot.val();
+            $('tbody').empty();
 
-    //         $.each(trains,function(){
-    //             $('tbody').append($('<tr>').attr('id','row-'+this.idVal));
-    //             $('tr#row-'+this.idVal).append($('<th>').attr('scope','row').text(this.trainName));
-    //             $('tr#row-'+this.idVal).append($('<td>').text(this.dest));
-    //             $('tr#row-'+this.idVal).append($('<td>').text(this.freq));
-    //             $('tr#row-'+this.idVal).append($('<td>').text(this.nextArrival));
-    //         })
+            $.each(trains,function(){
+                $('tbody').append($('<tr>').attr('id','row-'+this.idVal));
+                $('tr#row-'+this.idVal).append($('<th>').attr('scope','row').text(this.trainName));
+                $('tr#row-'+this.idVal).append($('<td>').text(this.dest));
+                $('tr#row-'+this.idVal).append($('<td>').text(this.freq));
+                $('tr#row-'+this.idVal).append($('<td>').text(this.nextArrival));
+            })
 
-    //     });
-    // };
+        });
+    };
 
 
     
