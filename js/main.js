@@ -18,43 +18,53 @@ $(document).ready(function(){
     database.ref('/submits').on('value', function(snapshot){
         numSubmits = snapshot.val();
     });
-    
-    
 
-    //Working code to set database information
-        // database.ref('/trains').set({
-        //     trainId:{
-        //         trainName : 'Name 1',
-        //         dest : 'Dest 1',
-        //         freq : 'Freq 1',
-        //         nextArrival : 'Arrival 1',
-        //     }
-        // })
-
+    updateDOM();
+ 
     //on submit: take all values and enters them into an object with unique id
     $('#trainSubmit').on('click', function(event){
         event.preventDefault();
         numSubmits++
         database.ref('/submits').set(numSubmits);
-        console.log(numSubmits)
-
         
         database.ref('/trains').update({
-                ['trainId-'+numSubmits] :{
-                    trainName : $('#train-name').val(),
-                    dest : $('#destination').val(),
-                    freq : $('#train-time').val(),
-                    nextArrival : $('#frequency').val(),
-                }
+            ['trainId-'+numSubmits] : {
+                trainName : $('#train-name').val(),
+                dest : $('#destination').val(),
+                freq : $('#frequency').val(),
+                nextArrival : $('#train-time').val(),
+                idVal: numSubmits,
+            }
+        })
+        
+        updateDOM();
+        
+    });
+    
+    //take values (convert times) and add them to database
+    
+    //take most recent database values and append them to DOM
+    function updateDOM() {
+        $('#train-name').val('');
+        $('#destination').val('');
+        $('#train-time').val('');
+        $('#frequency').val('');
+
+        //return object
+        database.ref('/trains').on('value', function(snapshot){
+            let trains = snapshot.val();
+            $('tbody').empty();
+
+            $.each(trains,function(){
+                $('tbody').append($('<tr>').attr('id','row-'+this.idVal));
+                $('tr#row-'+this.idVal).append($('<th>').attr('scope','row').text(this.trainName));
+                $('tr#row-'+this.idVal).append($('<td>').text(this.dest));
+                $('tr#row-'+this.idVal).append($('<td>').text(this.freq));
+                $('tr#row-'+this.idVal).append($('<td>').text(this.nextArrival));
             })
 
-    });
-
-    //take values (convert times) and add them to database
-
-    //take most recent database values and append them to DOM
-
-
+        });
+    };
 
 
     
