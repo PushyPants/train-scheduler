@@ -27,22 +27,6 @@ $(document).ready(function(){
        
     }
 
- // (TEST 1)
-    // First Train of the Day is 3:00 AM
-    // Assume Train comes every 3 minutes.
-    // Assume the current time is 3:16 AM....
-    // What time would the next train be...? (Use your brain first)
-    // It would be 3:18 -- 2 minutes away
-
-    // Solved Mathematically
-    // Test case 1:
-    // 16 - 00 = 16
-    // 16 % 3 = 1 (Modulus is the remainder)
-    // 3 - 1 = 2 minutes away
-    // 2 + 3:16 = 3:18
-
-    
-    //current times minutes - 00
     function setTimes() {
         database.ref('/trains').on('value', function(snapshot){
             let train = snapshot.val();
@@ -57,13 +41,13 @@ $(document).ready(function(){
                 let minAway = freq - modulus;
                 let nextArr = moment().add(minAway,'minutes').format('h:mm a');
 
-                console.log(this.idVal);
-                console.log(currentTime);
-                console.log(currentMinutes);
-                console.log(freq);
-                console.log(modulus);
-                console.log('minutes away ',minAway);
-                console.log('next arrival ',nextArr)
+                // console.log(this.idVal);
+                // console.log(currentTime);
+                // console.log(currentMinutes);
+                // console.log(freq);
+                // console.log(modulus);
+                // console.log('minutes away ',minAway);
+                // console.log('next arrival ',nextArr)
                 
 
                 $('tr#row-'+id).append($('<td>').text(nextArr));
