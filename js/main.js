@@ -37,7 +37,7 @@ $(document).ready(function(){
         numSubmits = snapshot.val();
     });
 
-    //updateDOM();
+    setDom();
 
     function convertToMoment() {
         let unconverted = $('#train-time').val();
@@ -49,8 +49,9 @@ $(document).ready(function(){
         let mm = tSplit[1];
         console.log(mm)
        
-
     }
+
+   
  
     //on submit: take all values and enters them into an object with unique id
     $('#trainSubmit').on('click', function(event){
@@ -58,23 +59,35 @@ $(document).ready(function(){
         numSubmits++
         database.ref('/submits').set(numSubmits);
         
-        database.ref('/trains').update({
-            ['trainId-'+numSubmits] : {
-                trainName : $('#train-name').val(),
-                dest : $('#destination').val(),
-                freq : $('#frequency').val(),
-                nextArrival : $('#train-time').val(),
-                idVal: numSubmits,
-            }
+        database.ref('/trains').push({
+            trainName : $('#train-name').val(),
+            dest : $('#destination').val(),
+            freq : $('#frequency').val(),
+            startTime : $('#train-time').val(),
+            idVal: numSubmits,
         })
-        convertToMoment();
-        //updateDOM();
-        
+        updateDOM();
     });
     
     //take values (convert times) and add them to database
     
     //take most recent database values and append them to DOM
+    function setDom() {
+        $('tbody').empty();
+        //return object
+        database.ref('/trains').on('child_added', function(snapshot){
+            let id = snapshot.key;
+            let val = snapshot.val()
+
+            $('tbody').append($('<tr>').attr('id','row-'+id));
+            $('tr#row-'+id).append($('<th>').attr('scope','row').text(val.trainName));
+            $('tr#row-'+id).append($('<td>').text(val.dest));
+            $('tr#row-'+id).append($('<td>').text(val.freq));
+            $('tr#row-'+id).append($('<td>').text(val.startTime));
+
+        });
+    };
+
     function updateDOM() {
         $('#train-name').val('');
         $('#destination').val('');
@@ -82,18 +95,12 @@ $(document).ready(function(){
         $('#frequency').val('');
 
         //return object
-        database.ref('/trains').on('value', function(snapshot){
-            let trains = snapshot.val();
-            $('tbody').empty();
-
-            $.each(trains,function(){
+        database.ref('/trains').on('child_added', function(snapshot){
                 $('tbody').append($('<tr>').attr('id','row-'+this.idVal));
                 $('tr#row-'+this.idVal).append($('<th>').attr('scope','row').text(this.trainName));
                 $('tr#row-'+this.idVal).append($('<td>').text(this.dest));
                 $('tr#row-'+this.idVal).append($('<td>').text(this.freq));
-                $('tr#row-'+this.idVal).append($('<td>').text(this.nextArrival));
-            })
-
+                $('tr#row-'+this.idVal).append($('<td>').text(this.startTime));
         });
     };
 
