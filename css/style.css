@@ -1,3 +1,16 @@
 .trainSchedule {
     margin-bottom:30px;
 }
+
+.alert-positioner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    display: none;
+}
+
+.alert {
+    position: relative;
+    top: -50%;
+    left: -50%;
+}

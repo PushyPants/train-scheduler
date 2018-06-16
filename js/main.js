@@ -1,5 +1,10 @@
 $(document).ready(function(){
 
+    //I did not get super fancy with this one. I had planned on more but I borked the code while refactoring... 
+    //After some yelling and whatnot... I pulled myself back together and rebuilt it to this.
+    //I do feel that it is cleaner and more efficient than what I originally did. I did do some of the bonus work. 
+
+
     var config = {
         apiKey: "AIzaSyDmWkwTbAol6LvYK6DIgRo41m2VG9r99x4",
         authDomain: "train-scheduler-b006b.firebaseapp.com",
@@ -15,10 +20,19 @@ $(document).ready(function(){
 
     setTimes();
 
+    //check current time to change DOM on the minute
+    setInterval(function(){
+        now = moment()
+        if(moment() !== now) {
+            $('tbody').empty();
+            setTimes();
+            now = moment();
+        }
+    },1000)
+
     function setTimes() {
         database.ref('/trains').on('child_added', function(snapshot){
             let trains = snapshot.val();
-            console.log(snapshot.key)
 
             var childKey = snapshot.key;
             var childData = snapshot.val();
@@ -34,18 +48,22 @@ $(document).ready(function(){
             $('tbody').append($('<tr>').attr('id','row-'+id));
             $('tr#row-'+id).append($('<th>').attr('scope','row').text(childData.trainName));
             $('tr#row-'+id).append($('<td>').text(childData.dest));
-            $('tr#row-'+id).append($('<td>').text(childData.freq));
+            $('tr#row-'+id).append($('<td>').attr('class','text-center').text(childData.freq));
             $('tr#row-'+id).append($('<td>').text(nextArr));
-            $('tr#row-'+id).append($('<td>').text(minAway));
+            if(minAway == freq) {
+            $('tr#row-'+id).append($('<td>').attr('class','text-center').text('Arriving Now'));
+            } else {
+            $('tr#row-'+id).append($('<td>').attr('class','text-center').text(minAway));
+            }
             
         });
     };
   
 
-    //on submit: take all values and enters them into an object with unique id
+    //on submit: check for all fields having value and push object to database
     $('#trainSubmit').on('click', function(event){
         event.preventDefault();
-        
+        if ($('#train-name').val() !== '' && $('#destination').val() !== '' && $('#train-time').val() !== '' && $('#frequency').val() !== '' ) {
         database.ref('/trains').push({
             trainName : $('#train-name').val().trim(),
             dest : $('#destination').val().trim(),
@@ -57,6 +75,14 @@ $(document).ready(function(){
         $('#destination').val('');
         $('#train-time').val('');
         $('#frequency').val('');
+
+        } else {
+            $('.alert-positioner').fadeIn()
+            setTimeout(function(){$('.alert-positioner').fadeOut()},2000)
+            console.log('form not complete')
+
+        }
+
     });
     
   
